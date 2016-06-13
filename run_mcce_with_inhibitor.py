@@ -10,7 +10,7 @@ from subprocess import call # This is needed to submit jobs
 
 pdb_files = '/home/salah/mcce-charges/pdbs/'
 destination_runs = '/home/salah/johnChodera_project_on_github/mcce-charges/mcce_runs/quick/'
-
+# comment for testing
 dirs_in_pdb_files = [d for d in os.listdir(pdb_files) if os.path.isdir(os.path.join(pdb_files, d))]
 good_res_list = [
 '26O',
