@@ -1,9 +1,5 @@
 #!/usr/local/bin/env python
 # -*- coding: utf-8 -*-
-import sys, os
-from optparse import OptionParser
-
-
 """
 Automate MCCE Calculations.
 Description
@@ -25,8 +21,99 @@ TODO
 	* Collect all current utility functions.
 	*
 """
-def generate_prm(source_prm, ):
-	pass
+__author__ = 'Kamran Haider'
+
+#=============================================================================================
+# IMPORTS
+#=============================================================================================
+
+import sys, os, re
+from optparse import OptionParser
+
+
+
+
+class MCEE_Param(object):
+	"""A class representing an MCCE parameter file
+
+	Notes
+	-----
+		This class uses run.prm.quick as a template file to build an object.
+		Should there be an option to initialize with quick or full (?)
+	"""
+	def __init__(self, mcce_directory, calculation_type = "quick"):
+		"""Initialize parameters for an MCCE calculation.
+
+		Parameters
+		----------
+		mcce_directory : str
+			A string containing full path of the MCCE installation directory.
+		run_type : str, default=quick
+			A string specifying the type of MCCE calculation, if not specified "quick" is used by default. 
+		"""
+
+		self.mcce_directory = mcce_directory
+		self.calculation_type = calculation_type
+		self.mcce_params = self.load_params()
+
+	def load_params(self):
+		"""Loads parameters for MCCE calculation from run.prm file in MCCE installation directory.
+
+		Returns
+		-------
+		params : dict
+			A dictionary of MCCE calculation parameters with key 
+		"""
+		prm_source_file = open(self.mcce_directory + "run.prm.quick", "r")
+		prm_lines = prm_source_file.readlines()
+		prm_source_file.close()
+		params = {}
+		for line in prm_lines:
+			words = line.split(" ")
+			if re.search(r'\((.\w*)\)', words[-1]):
+				parameter = words[-1].strip("()\n")
+				value = words[0]
+				params[parameter] = value
+		return params
+
+	def edit_parameters(self, **kwargs):
+		"""Edits MCCE parameters by updating values in MCCE parameter dictionary keys.
+
+		Parameters
+		----------
+		**kwargs : Arbitrary keyword arguments
+			Any number of parameters can be specified as MCCE_PARAM="VALUE", where MCCE_PARAM is a valid
+			parameter name and "VALUE" is a string with corresponding value.
+
+		Examples
+		--------
+		>>> prm = MCEE_Param("~/mcce/")
+		>>> prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
+		>>> prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t")
+
+		Notes
+		-----
+		During parameter editing, there is no way to check if legal values are passed on, this is probably handled by
+		MCCE initialization step. It is therefore assumed that this function is used responsibly.
+		"""
+		for parameter in kwargs:
+			update_value = kwargs[parameter]
+			if parameter not in self.mcce_params.keys():
+				raise KeyError("Could not find %s parameter in parameter dictionary, please supply valid parameters" % parameter)
+			else:
+				self.mcce_params[parameter] = update_value
+
+	def write_runprm(self, destination_dir):
+		"""Writes run.prm file in a sub-directory
+
+		Parameters
+		----------
+		destination_dir : string
+			String containing path of the directory, where run.prm will be saved.
+		"""
+		runprm_filepath = destination_dir + "run.prm"
+
+
 
 def automated_run(input_dir, destination_dir, mcce_dir):
 	"""Performs an automated mcce calculation on a set of pdb file, located in an input folder.
@@ -59,9 +146,6 @@ def automated_run(input_dir, destination_dir, mcce_dir):
 		    os.makedirs(output_dir)
 
 
-
-
-
 def main():
     parser = OptionParser()
     parser.add_option("-i", "--input_directory", dest="input_directory", type="string", help="Directory containing input PDB files.")
@@ -73,7 +157,13 @@ def main():
         parser.print_help()
     else:
         print "Setting up calculations..."
-    	automated_run(options.input_directory, options.destination_directory, options.mcce_directory)
+    	#automated_run(options.input_directory, options.destination_directory, options.mcce_directory)
+    	prm = MCEE_Param("/home/kamran/mcce")
+    	prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
+    	print prm.mcce_params
+    	prm.write_runprm(".")
+
+
 
 # Using entry point approach for future conda packaging
 def entry_point():
