@@ -28,6 +28,7 @@ __author__ = 'Kamran Haider'
 #=============================================================================================
 
 import sys, os, re
+from collections import OrderedDict
 from optparse import OptionParser
 
 
@@ -49,7 +50,7 @@ class MCEE_Param(object):
 		mcce_directory : str
 			A string containing full path of the MCCE installation directory.
 		run_type : str, default=quick
-			A string specifying the type of MCCE calculation, if not specified "quick" is used by default. 
+			A string specifying the type of MCCE calculation, if not specified "quick" is used by default.
 		"""
 
 		self.mcce_directory = mcce_directory
@@ -62,18 +63,21 @@ class MCEE_Param(object):
 		Returns
 		-------
 		params : dict
-			A dictionary of MCCE calculation parameters with key 
+			A dictionary of MCCE calculation parameters, each element of the dictionary is a key: value pair where,
+			key = string, containing the parameter name in the prm file, without parentheses
+			value = list, first element is the value and second element is the description, both are read from the prm file
 		"""
-		prm_source_file = open(self.mcce_directory + "run.prm.quick", "r")
+		prm_source_file = open(self.mcce_directory + "/" + "run.prm.quick", "r")
 		prm_lines = prm_source_file.readlines()
 		prm_source_file.close()
-		params = {}
+		params = OrderedDict()
 		for line in prm_lines:
 			words = line.split(" ")
 			if re.search(r'\((.\w*)\)', words[-1]):
 				parameter = words[-1].strip("()\n")
 				value = words[0]
-				params[parameter] = value
+				description = line.split(" ")[1:-1]
+				params[parameter] = [value, " ".join(description)]
 		return params
 
 	def edit_parameters(self, **kwargs):
@@ -101,7 +105,7 @@ class MCEE_Param(object):
 			if parameter not in self.mcce_params.keys():
 				raise KeyError("Could not find %s parameter in parameter dictionary, please supply valid parameters" % parameter)
 			else:
-				self.mcce_params[parameter] = update_value
+				self.mcce_params[parameter][0] = update_value
 
 	def write_runprm(self, destination_dir):
 		"""Writes run.prm file in a sub-directory
@@ -112,7 +116,12 @@ class MCEE_Param(object):
 			String containing path of the directory, where run.prm will be saved.
 		"""
 		runprm_filepath = destination_dir + "run.prm"
-
+		runprm_file = open(runprm_filepath, "w")
+		param_line_format = "{0:s} {1:s} ({2:s})\n"
+		for parameter in self.mcce_params.keys():
+			line_to_write = param_line_format.format(self.mcce_params[parameter][0], self.mcce_params[parameter][1], parameter) 
+			runprm_file.write(line_to_write)
+		runprm_file.close()
 
 
 def automated_run(input_dir, destination_dir, mcce_dir):
@@ -130,7 +139,8 @@ def automated_run(input_dir, destination_dir, mcce_dir):
 	Notes
 	-----
 	This function will not work if each pdb file that should be processed is present in its own sub-directory. It is suggested that
-	all pdb files are collected in the input directory before running this."""
+	all pdb files are collected in the input directory before running this.
+	"""
 
 	# check if input_dir exists and is not empty
 	if not os.path.isdir(input_dir):
@@ -160,7 +170,8 @@ def main():
     	#automated_run(options.input_directory, options.destination_directory, options.mcce_directory)
     	prm = MCEE_Param("/home/kamran/mcce")
     	prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
-    	print prm.mcce_params
+    	#for k in  prm.mcce_params.keys():
+    	#	print k, prm.mcce_params[k]
     	prm.write_runprm(".")
 
 
