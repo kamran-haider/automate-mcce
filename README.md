@@ -8,10 +8,9 @@ Future updates will also include, automated post-processing capabilities.
 automated_mcce.py requires the anaconda python installation. A working MCCE installtion is also required.
 #### Installation
 You can simpy clone the repository and run the script. 
+```
     git clone https://github.com/MobleyLab/alchemical-analysis.git
-    cd alchemical-analysis
-    sudo python setup.py install
-
+```
 #### Usage
 
 Script: `automated_mcce.py`
