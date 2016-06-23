@@ -29,7 +29,7 @@ __author__ = 'Kamran Haider'
 
 import sys, os, re
 from collections import OrderedDict
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 
 
@@ -162,29 +162,39 @@ def automated_run(input_dir, destination_dir, mcce_dir):
 		    os.makedirs(output_dir)
 
 
+
+def parse_args():
+	"""Parse the command line arguments and perform some validation on the
+	arguments
+	Returns
+	-------
+	args : argparse.Namespace
+	    The namespace containing the arguments
+	"""
+	parser = ArgumentParser(description='''Run MCCE on multiple PDB files''')
+	required = parser.add_argument_group('required arguments')
+	required.add_argument('-i', '--input_directory', required=True, type=str,
+                          help='''path to the directory containing input
+                          PDB files, already preprocessed for MCCE calculations''')
+	required.add_argument('-d', '--destination_directory', required=True, type=str,
+                          help='''path to the directory where output of mcce 
+                          calculations will be stored.''')
+	required.add_argument('-e', '--mcce_directory', required=True, type=str,
+                          help='''path to the directory where MCCE is installed.''')
+	args = parser.parse_args()
+	return args
+
 def main():
-    parser = OptionParser()
-    parser.add_option("-i", "--input_directory", dest="input_directory", type="string", help="Directory containing input PDB files.")
-    parser.add_option("-d", "--destination_directory", dest="destination_directory", type="string", help="Directory where output of mcce calculations will be stored.")
-    parser.add_option("-e", "--mcce_directory", dest="mcce_directory", type="string", help="Ligand file")
-    (options, args) = parser.parse_args()
-    if len(args) == 1:
-        print "\nNo argument given!"
-        parser.print_help()
-    else:
-        print "Setting up calculations..."
-    	#automated_run(options.input_directory, options.destination_directory, options.mcce_directory)
-    	prm = MCEE_Param("/home/kamran/mcce")
-    	prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
-    	#for k in  prm.mcce_params.keys():
-    	#	print k, prm.mcce_params[k]
-    	prm.write_runprm("")
+	args = parse_args()
+	#automated_run(args.input_directory, args.destination_directory, args.mcce_directory)
 
-
+	#prm = MCEE_Param(args.mcce_directory)
+	#prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
+	#prm.write_runprm("")
 
 # Using entry point approach for future conda packaging
 def entry_point():
-    main()
+	main()
     
 if __name__ == '__main__':
     entry_point()
