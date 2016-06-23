@@ -157,7 +157,7 @@ def automated_run(input_dir, destination_dir, mcce_dir):
 		  os.makedirs(output_dir)
 		output_dir = output_dir.replace("//", "/")
 		source_pdb_file_path = input_dir + "/" + pdb_file
-		target_pdb_file_path = output_dir + "/" + pdb_file
+		target_pdb_file_path = output_dir + "/" + "prot.pdb"
 		source_pdb_file_path = source_pdb_file_path.replace("//", "/")
 		target_pdb_file_path = target_pdb_file_path.replace("//", "/")
 		shutil.copy(source_pdb_file_path, target_pdb_file_path)
