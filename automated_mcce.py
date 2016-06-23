@@ -77,6 +77,12 @@ class MCEE_Param(object):
 				parameter = words[-1].strip("()\n")
 				value = words[0]
 				description = line.split(" ")[1:-1]
+				if parameter == "MCCE_HOME":
+					value = self.mcce_directory
+				if parameter in ["EXTRA", "RENAME_RULES"]:
+					value = self.mcce_directory + "/" + value.split("/")[-1]
+				if parameter == "DELPHI_EXE":
+					value = self.mcce_directory + "/bin/" + value.split("/")[-1]
 				params[parameter] = [value, " ".join(description)]
 		return params
 
@@ -172,7 +178,7 @@ def main():
     	prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
     	#for k in  prm.mcce_params.keys():
     	#	print k, prm.mcce_params[k]
-    	prm.write_runprm(".")
+    	prm.write_runprm("")
 
 
 
