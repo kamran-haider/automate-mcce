@@ -27,7 +27,7 @@ __author__ = 'Kamran Haider'
 # IMPORTS
 #=============================================================================================
 
-import sys, os, re
+import sys, os, re, shutil
 from collections import OrderedDict
 from argparse import ArgumentParser
 
@@ -83,6 +83,8 @@ class MCEE_Param(object):
 					value = self.mcce_directory + "/" + value.split("/")[-1]
 				if parameter == "DELPHI_EXE":
 					value = self.mcce_directory + "/bin/" + value.split("/")[-1]
+				if "//" in value:
+					value = value.replace("//", "/")
 				params[parameter] = [value, " ".join(description)]
 		return params
 
@@ -159,9 +161,7 @@ def automated_run(input_dir, destination_dir, mcce_dir):
 		print "Working on: ", pdb_file
 		output_dir = destination_dir + "/mcee_results_" + pdb_file[0:-4]
 		if not os.path.exists(output_dir):
-		    os.makedirs(output_dir)
-
-
+		  os.makedirs(output_dir)
 
 def parse_args():
 	"""Parse the command line arguments and perform some validation on the
@@ -186,11 +186,12 @@ def parse_args():
 
 def main():
 	args = parse_args()
-	#automated_run(args.input_directory, args.destination_directory, args.mcce_directory)
-
+	automated_run(args.input_directory, args.destination_directory, args.mcce_directory)
+	
 	#prm = MCEE_Param(args.mcce_directory)
 	#prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
 	#prm.write_runprm("")
+	#print prm.mcce_params
 
 # Using entry point approach for future conda packaging
 def entry_point():
