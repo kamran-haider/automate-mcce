@@ -8,38 +8,24 @@ This module implements a program to set up and run automated mcce calculations.
 Notes
 -----
 This is still in development.
-References
-----------
+
 Examples
 --------
 Coming soon!
-
-TODO
-----
-	* Envision batch mcce runs.
-	* Do we always start from a folder containing PDB files or are there other ways too?
-	* Collect all current utility functions.
-	*
 """
+
 __author__ = 'Kamran Haider'
 
-#=============================================================================================
-# IMPORTS
-#=============================================================================================
-
-import sys, os, re, shutil
+import sys, time, os, shutil, subprocess, re
 from collections import OrderedDict
 from argparse import ArgumentParser
-
-
-
 
 class MCEE_Param(object):
 	"""A class representing an MCCE parameter file
 
 	Notes
 	-----
-		This class uses run.prm.quick as a template file to build an object.
+		This class uses run.prm.quick as a template file to build an MCCE parameter object.
 		Should there be an option to initialize with quick or full (?)
 	"""
 	def __init__(self, mcce_directory, calculation_type = "quick"):
@@ -49,12 +35,14 @@ class MCEE_Param(object):
 		----------
 		mcce_directory : str
 			A string containing full path of the MCCE installation directory.
-		run_type : str, default=quick
+		calculation_type : str, default=quick
 			A string specifying the type of MCCE calculation, if not specified "quick" is used by default.
 		"""
 
 		self.mcce_directory = mcce_directory
 		self.calculation_type = calculation_type
+		if calculation_type not in ["quick", "full", "default"]:
+			sys.exit("Unrecognized MCCE calculation type, allowed values are: quick, full or default.")
 		self.mcce_params = self.load_params()
 
 	def load_params(self):
@@ -67,7 +55,7 @@ class MCEE_Param(object):
 			key = string, containing the parameter name in the prm file, without parentheses
 			value = list, first element is the value and second element is the description, both are read from the prm file
 		"""
-		prm_source_file = open(self.mcce_directory + "/" + "run.prm.quick", "r")
+		prm_source_file = open(self.mcce_directory + "/" + "run.prm." + self.calculation_type, "r")
 		prm_lines = prm_source_file.readlines()
 		prm_source_file.close()
 		params = OrderedDict()
@@ -131,6 +119,13 @@ class MCEE_Param(object):
 			runprm_file.write(line_to_write)
 		runprm_file.close()
 
+	def write_submitsh(self, destination_dir, run_name = ""):
+		submit_text = ["#!/bin/sh\n", "#$ -S /bin/sh\n", "#$ -N mcce\n", "#$ -cwd\n", "#$ -o run.log\n", "#$ -e error.log\n", self.mcce_directory]
+		submit_text[2] = submit_text[2].replace("mcce", "mcce_" + run_name)
+		submitsh = open("submit.sh", "w")
+		for line in submit_text:
+			submitsh.write(line)
+		submitsh.close()
 
 def automated_run(input_dir, destination_dir, mcce_dir):
 	"""Performs an automated mcce calculation on a set of pdb file, located in an input folder.
@@ -153,15 +148,28 @@ def automated_run(input_dir, destination_dir, mcce_dir):
 	# check if input_dir exists and is not empty
 	if not os.path.isdir(input_dir):
 		sys.exit("Input directory not found.")
-	if destination_dir == None:
-		sys.exit("Output directory not specified.")
 	# check if mcce exists
 	input_pdb_files = [pdb_file for pdb_file in os.listdir(input_dir) if pdb_file.endswith(".pdb")]
 	for pdb_file in input_pdb_files:
-		print "Working on: ", pdb_file
+		print "Preparing input files for: ", pdb_file[0:-4]
 		output_dir = destination_dir + "/mcee_results_" + pdb_file[0:-4]
 		if not os.path.exists(output_dir):
 		  os.makedirs(output_dir)
+		output_dir = output_dir.replace("//", "/")
+		source_pdb_file_path = input_dir + "/" + pdb_file
+		target_pdb_file_path = output_dir + "/" + pdb_file
+		source_pdb_file_path = source_pdb_file_path.replace("//", "/")
+		target_pdb_file_path = target_pdb_file_path.replace("//", "/")
+		shutil.copy(source_pdb_file_path, target_pdb_file_path)
+		# generate prm file
+		os.chdir(output_dir)
+		prm = MCEE_Param(mcce_dir)
+		prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
+		prm.write_runprm("")
+		prm.write_submitsh("", run_name = pdb_file[0:-4])
+		subprocess.call("qsub submit.sh", shell=True)
+		time.sleep(2.0)
+
 
 def parse_args():
 	"""Parse the command line arguments and perform some validation on the
@@ -187,11 +195,6 @@ def parse_args():
 def main():
 	args = parse_args()
 	automated_run(args.input_directory, args.destination_directory, args.mcce_directory)
-	
-	#prm = MCEE_Param(args.mcce_directory)
-	#prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
-	#prm.write_runprm("")
-	#print prm.mcce_params
 
 # Using entry point approach for future conda packaging
 def entry_point():
