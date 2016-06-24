@@ -1,6 +1,10 @@
 #### automate-mcce
-Scripts to efficiently automate MCCE run on multiple systems.
-The purpose of these scripts is to automate MCCE calculations on multiple PDB files. 
+A Python module to efficiently automate MCCE run.
+The purpose of automate-mcce module is twofold: 
+
+- simplifiy setting MCCE calculations by automatically creating parameter file, editing MCCE parameters without manually handling run.prm files.
+- automate MCCE calculations on multiple PDB files. 
+
 Future updates will also include, automated post-processing capabilities. 
 
 #### Prerequisites
