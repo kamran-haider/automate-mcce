@@ -4,15 +4,13 @@ The purpose of these scripts is to automate MCCE calculations on multiple PDB fi
 Future updates will also include, automated post-processing capabilities. 
 
 #### Prerequisites
-
-automated_mcce.py requires the anaconda python installation. A working MCCE installtion is also required.
+To run MCCE calculations in automated mode through `automated_mcce.py`, you will needthe anaconda python distribution and a working MCCE installtion.
 #### Installation
 You can simpy clone the repository and run the script. 
 ```
     git clone git@github.com:GunnerLab/automate-mcce.git
 ```
 #### Usage
-
 Script: `automated_mcce.py`
 
 Help for `automated_mcce.py` (obtained via `python automated_mcce.py -h`) is:
