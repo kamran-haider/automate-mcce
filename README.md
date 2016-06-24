@@ -1,16 +1,17 @@
 #### automate-mcce
-A Python module to efficiently automate MCCE run.
-The purpose of automate-mcce module is twofold: 
+A Python module to efficiently automate MCCE calculations.
+The automate-mcce module can be used to: 
 
-- simplifiy setting MCCE calculations by automatically creating parameter file, editing MCCE parameters without manually handling run.prm files.
-- automate MCCE calculations on multiple PDB files. 
+- Simplifiy setting up MCCE calculations by automatically creating parameter files, editing MCCE parameters without manually handling run.prm files and creating job submit scripts.
+- Automate MCCE calculations on multiple PDB files. 
+- Use automated MCCE calculations as part of calculation workflows that use additional components (e.g., hydrogen bond analysis) 
 
-Future updates will also include, automated post-processing capabilities. 
+Future updates will also include automated post-processing capabilities. 
 
 #### Prerequisites
-To run MCCE calculations in automated mode through `automated_mcce.py`, you will needthe anaconda python distribution and a working MCCE installtion.
+To run MCCE calculations using `automated_mcce.py`, you will need the anaconda python distribution and a working MCCE installtion.
 #### Installation
-You can simpy clone the repository and run the script. 
+Simply clone the repository and run `automated_mcce.py` like any other Python program. 
 ```
     git clone git@github.com:GunnerLab/automate-mcce.git
 ```
