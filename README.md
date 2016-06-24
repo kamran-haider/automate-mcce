@@ -9,7 +9,7 @@ automated_mcce.py requires the anaconda python installation. A working MCCE inst
 #### Installation
 You can simpy clone the repository and run the script. 
 ```
-    git clone https://github.com/MobleyLab/alchemical-analysis.git
+    git clone git@github.com:GunnerLab/automate-mcce.git
 ```
 #### Usage
 
