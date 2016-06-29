@@ -16,7 +16,9 @@ Coming soon!
 
 __author__ = 'Kamran Haider'
 
-import sys, os, shutil, subprocess, re
+import sys, os, shutil, re
+from subprocess import call
+
 from collections import OrderedDict
 from argparse import ArgumentParser
 
@@ -128,7 +130,7 @@ class MCCEParams(object):
 			submitsh.write(line)
 		submitsh.close()
 
-def automated_run(input_dir, destination_dir, mcce_dir):
+def automated_run(input_dir, destination_dir, mcce_dir, local=False):
 	"""Performs an automated mcce calculation on a set of pdb file, located in an input folder.
 
 	Parameters
@@ -168,8 +170,8 @@ def automated_run(input_dir, destination_dir, mcce_dir):
 		prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
 		prm.write_runprm("")
 		prm.write_submitsh("", run_name = pdb_file[0:-4])
-		subprocess.call("qsub submit.sh", shell=True)
-		print "MCCE job submitted, please see progress.log for more information."
+		call("qsub submit.sh", shell=True)
+
 
 def parse_args():
 	"""Parse the command line arguments and perform some validation on the
@@ -191,7 +193,6 @@ def parse_args():
                           help='''path to the directory where MCCE is installed.''')
 	args = parser.parse_args()
 	return args
-
 
 
 def main():
