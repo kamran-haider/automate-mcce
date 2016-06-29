@@ -20,8 +20,16 @@ import sys, time, os, shutil, subprocess, re
 from collections import OrderedDict
 from argparse import ArgumentParser
 
-class MCEE_Param(object):
-	"""A class representing an MCCE parameter file
+class MCCEParams(object):
+	"""
+	A class representing an MCCE parameter file
+
+	Parameters
+	----------
+	mcce_directory : str
+		A string containing full path of the MCCE installation directory.
+	calculation_type : str, default=quick
+		A string specifying the type of MCCE calculation, if not specified "quick" is used by default.
 
 	Notes
 	-----
@@ -30,13 +38,6 @@ class MCEE_Param(object):
 	"""
 	def __init__(self, mcce_directory, calculation_type = "quick"):
 		"""Initialize parameters for an MCCE calculation.
-
-		Parameters
-		----------
-		mcce_directory : str
-			A string containing full path of the MCCE installation directory.
-		calculation_type : str, default=quick
-			A string specifying the type of MCCE calculation, if not specified "quick" is used by default.
 		"""
 
 		self.mcce_directory = mcce_directory
@@ -87,14 +88,13 @@ class MCEE_Param(object):
 
 		Examples
 		--------
-		>>> prm = MCEE_Param("~/mcce/")
+		>>> prm = MCCEParams("~/mcce/")
 		>>> prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
 		>>> prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t")
 
 		Notes
 		-----
-		During parameter editing, there is no way to check if legal values are passed on, this is probably handled by
-		MCCE initialization step. It is therefore assumed that this function is used responsibly.
+		During parameter editing, there is no way to check if legal values are passed on, this is probably handled by MCCE initialization step. It is therefore assumed that this function is used responsibly.
 		"""
 		for parameter in kwargs:
 			update_value = kwargs[parameter]
@@ -163,13 +163,12 @@ def automated_run(input_dir, destination_dir, mcce_dir):
 		shutil.copy(source_pdb_file_path, target_pdb_file_path)
 		# generate prm file
 		os.chdir(output_dir)
-		prm = MCEE_Param(mcce_dir)
+		prm = MCCEParams(mcce_dir)
 		prm.edit_parameters(DO_PREMCCE="t", DO_ROTAMERS="t", DO_ENERGY="t", DO_MONTE="f")
 		prm.write_runprm("")
 		prm.write_submitsh("", run_name = pdb_file[0:-4])
 		subprocess.call("qsub submit.sh", shell=True)
-		time.sleep(2.0)
-
+		print "MCCE job submitted, please see progress.log for more information."
 
 def parse_args():
 	"""Parse the command line arguments and perform some validation on the
@@ -191,6 +190,8 @@ def parse_args():
                           help='''path to the directory where MCCE is installed.''')
 	args = parser.parse_args()
 	return args
+
+
 
 def main():
 	args = parse_args()
