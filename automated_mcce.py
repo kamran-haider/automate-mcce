@@ -16,7 +16,7 @@ Coming soon!
 
 __author__ = 'Kamran Haider'
 
-import sys, time, os, shutil, subprocess, re
+import sys, os, shutil, subprocess, re
 from collections import OrderedDict
 from argparse import ArgumentParser
 
@@ -52,7 +52,7 @@ class MCCEParams(object):
 		Returns
 		-------
 		params : dict
-			A dictionary of MCCE calculation parameters, each element of the dictionary is a key: value pair where,
+			A dictionary of MCCE calculation parameters, each element of the dictionary is a key:
 			key = string, containing the parameter name in the prm file, without parentheses
 			value = list, first element is the value and second element is the description, both are read from the prm file
 		"""
@@ -94,7 +94,8 @@ class MCCEParams(object):
 
 		Notes
 		-----
-		During parameter editing, there is no way to check if legal values are passed on, this is probably handled by MCCE initialization step. It is therefore assumed that this function is used responsibly.
+		During parameter editing, there is no way to check if legal values are passed on. 
+		This is probably handled by MCCE initialization step. It is therefore assumed that this function is used responsibly.
 		"""
 		for parameter in kwargs:
 			update_value = kwargs[parameter]
