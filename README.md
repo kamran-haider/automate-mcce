@@ -1,4 +1,5 @@
-Landscape.io code health: [![Code Health](https://landscape.io/github/GunnerLab/automate-mcce/master/landscape.svg?style=plastic)](https://landscape.io/github/GunnerLab/automate-mcce/master)
+Landscape.io code health: https://landscape.io/github/GunnerLab/automate-mcce/master/landscape.svg?style=plastic
+
 #### automate-mcce
 A Python module to efficiently automate MCCE calculations.
 The automate-mcce module can be used to: 
