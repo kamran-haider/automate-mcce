@@ -1,4 +1,6 @@
-Landscape Code Health: [![Code Health](https://landscape.io/github/GunnerLab/automate-mcce/master/landscape.svg?style=flat)](https://landscape.io/github/GunnerLab/automate-mcce/master)
+Landscape Code Health: ![alt text](https://landscape.io/github/GunnerLab/automate-mcce/master/landscape.svg?style=flat
+)
+
 
 #### automate-mcce
 A Python module to efficiently automate MCCE calculations.
