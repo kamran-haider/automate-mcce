@@ -1,4 +1,5 @@
-#### automate-mcce
+
+#### automate-mcce
 A Python module to efficiently automate MCCE calculations.
 The automate-mcce module can be used to: 
 
