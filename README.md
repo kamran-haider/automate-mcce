@@ -1,4 +1,4 @@
-Landscape Code Health: ![alt text](https://landscape.io/github/GunnerLab/automate-mcce/master/landscape.svg?style=flat)
+Landscape Code Health: [![Code Health](https://landscape.io/github/GunnerLab/automate-mcce/master/landscape.svg?style=flat)](https://landscape.io/github/GunnerLab/automate-mcce/master)
 
 
 #### automate-mcce
