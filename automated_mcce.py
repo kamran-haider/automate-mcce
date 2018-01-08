@@ -16,6 +16,7 @@ Coming soon!
 
 
 import sys
+import time
 from subprocess import call
 import os
 import shutil
@@ -141,7 +142,7 @@ class MCCEParams(object):
         submitsh.close()
 
 
-def automated_run(input_dir, destination_dir, mcce_dir, local=False):
+def automated_run(input_dir, destination_dir, mcce_dir, local=False), check=False:
     """Performs an automated mcce calculation on a set of pdb file, located in an input folder.
 
     Parameters
@@ -183,7 +184,11 @@ def automated_run(input_dir, destination_dir, mcce_dir, local=False):
                             DO_ENERGY="t", DO_MONTE="f")
         prm.write_runprm("")
         prm.write_submitsh("", run_name=pdb_file[0:-4])
+        if check:
+            print "This command will be executed for: ", pdb
+            print "qsub submit.sh"
         call("qsub submit.sh", shell=True)
+        time.sleep(10)
 
 
 def parse_args():
@@ -206,7 +211,6 @@ def parse_args():
                           help='''path to the directory where MCCE is installed.''')
     args = parser.parse_args()
     return args
-
 
 def main():
     args = parse_args()
