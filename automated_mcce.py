@@ -43,13 +43,13 @@ class MCCEParams(object):
       Should there be an option to initialize with quick or full (?)
     """
 
-    def __init__(self, mcce_directory, calculation_type="quick"):
+    def __init__(self, mcce_directory, calculation_type=None):
         """Initialize parameters for an MCCE calculation.
         """
 
         self.mcce_directory = mcce_directory
         self.calculation_type = calculation_type
-        if calculation_type not in ["quick", "full", "default"]:
+        if calculation_type not in ["quick", "full", "default", None]:
             sys.exit(
             "Unrecognized MCCE calculation type, allowed values are: quick, full or default.")
         self.mcce_params = self.load_params()
@@ -64,8 +64,12 @@ class MCCEParams(object):
           key = string, containing the parameter name in the prm file, without parentheses
           value = list, first element is the value and second element is the description, both are read from the prm file
         """
-        prm_source_file = open(self.mcce_directory +
-                               "/" + "run.prm." + self.calculation_type, "r")
+        prm_source_file = ""
+        if self.calculation_type is None:
+            prm_source_file = open(self.mcce_directory + "/" + "run.prm", "r")
+        else:
+            prm_source_file = open(self.mcce_directory + "/" + "run.prm." + self.calculation_type, "r")
+        
         prm_lines = prm_source_file.readlines()
         prm_source_file.close()
         params = OrderedDict()
@@ -142,7 +146,7 @@ class MCCEParams(object):
         submitsh.close()
 
 
-def automated_run(input_dir, destination_dir, mcce_dir, local=False), check=False:
+def automated_run(input_dir, destination_dir, mcce_dir, local=False):
     """Performs an automated mcce calculation on a set of pdb file, located in an input folder.
 
     Parameters
